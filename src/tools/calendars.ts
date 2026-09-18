@@ -29,10 +29,10 @@ export function registerCalendarTools(server: McpServer, getClient: GetClient) {
     {
       description: 'List nudges (reminders) in a date range.',
       inputSchema: z.object({
-              after: z.string().describe('YYYY-MM-DD lower bound (required).'),
-              before: z.string().describe('YYYY-MM-DD upper bound (required).'),
-              frameId: z.string().optional(),
-            }),
+        after: z.string().describe('YYYY-MM-DD lower bound (required).'),
+        before: z.string().describe('YYYY-MM-DD upper bound (required).'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: true },
     },
     frameScoped(getClient, async (c, f, { after, before }: { after: string; before: string; frameId?: string }) =>
@@ -44,9 +44,9 @@ export function registerCalendarTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Subscribe the frame to a webcal/ICS calendar URL.',
       inputSchema: z.object({
-              sync_url: z.string().describe('Public webcal/ICS URL to subscribe the frame to.'),
-              frameId: z.string().optional(),
-            }),
+        sync_url: z.string().describe('Public webcal/ICS URL to subscribe the frame to.'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { sync_url }: { sync_url: string; frameId?: string }) =>
@@ -58,10 +58,10 @@ export function registerCalendarTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Set which sub-calendars of a connected account are active.',
       inputSchema: z.object({
-              id: z.string(),
-              active_calendars: idArrayParam.describe('Calendar ids to keep active.'),
-              frameId: z.string().optional(),
-            }),
+        id: z.string(),
+        active_calendars: idArrayParam.describe('Calendar ids to keep active.'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id, active_calendars }: { id: string; active_calendars: Array<string | number>; frameId?: string }) =>
@@ -86,9 +86,9 @@ export function registerCalendarTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Set the default source calendar for new events.',
       inputSchema: z.object({
-              id: idParam.describe('Source-calendar id to make the default for new events.'),
-              frameId: z.string().optional(),
-            }),
+        id: idParam.describe('Source-calendar id to make the default for new events.'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id }: { id: string | number; frameId?: string }) => {
@@ -102,10 +102,10 @@ export function registerCalendarTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Link an Apple/iCloud calendar to the frame using an app-specific password.',
       inputSchema: z.object({
-              email: z.string().describe('Apple ID email.'),
-              app_specific_password: z.string().describe('An app-specific password generated at appleid.apple.com (NOT your normal Apple password).'),
-              frameId: z.string().optional(),
-            }),
+        email: z.string().describe('Apple ID email.'),
+        app_specific_password: z.string().describe('An app-specific password generated at appleid.apple.com (NOT your normal Apple password).'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { email, app_specific_password }: { email: string; app_specific_password: string; frameId?: string }) => {
@@ -119,10 +119,10 @@ export function registerCalendarTools(server: McpServer, getClient: GetClient) {
     {
       description: "Attribute a source calendar's events to one or more family members.",
       inputSchema: z.object({
-              id: idParam.describe('Source-calendar id (from skylight_list_source_calendars / skylight_list_calendars).'),
-              category_ids: idArrayParam.describe("Family-member category ids whose members this calendar's events are attributed to."),
-              frameId: z.string().optional(),
-            }),
+        id: idParam.describe('Source-calendar id (from skylight_list_source_calendars / skylight_list_calendars).'),
+        category_ids: idArrayParam.describe("Family-member category ids whose members this calendar's events are attributed to."),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id, category_ids }: { id: string | number; category_ids: Array<string | number>; frameId?: string }) => {
@@ -137,9 +137,9 @@ export function registerCalendarTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Create a source calendar from raw provider attributes (advanced).',
       inputSchema: z.object({
-              attributes: z.record(z.string(), z.unknown()).describe('Provider-specific source-calendar attributes.'),
-              frameId: z.string().optional(),
-            }),
+        attributes: z.record(z.string(), z.unknown()).describe('Provider-specific source-calendar attributes.'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { attributes }: { attributes: Record<string, unknown>; frameId?: string }) => {

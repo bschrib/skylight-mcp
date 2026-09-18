@@ -23,11 +23,11 @@ export function registerEventTools(server: McpServer, getClient: GetClient) {
     {
       description: 'List calendar events in a date range for a Skylight frame.',
       inputSchema: z.object({
-              date_min: z.string().describe('YYYY-MM-DD inclusive lower bound.'),
-              date_max: z.string().describe('YYYY-MM-DD inclusive upper bound.'),
-              timezone: z.string().optional().describe('IANA tz; defaults to the frame timezone.'),
-              frameId: z.string().optional(),
-            }),
+        date_min: z.string().describe('YYYY-MM-DD inclusive lower bound.'),
+        date_max: z.string().describe('YYYY-MM-DD inclusive upper bound.'),
+        timezone: z.string().optional().describe('IANA tz; defaults to the frame timezone.'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: true },
     },
     frameScoped(getClient, async (c, f, { date_min, date_max, timezone }: { date_min: string; date_max: string; timezone?: string; frameId?: string }) => {
@@ -43,8 +43,8 @@ export function registerEventTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Get one calendar event by id.',
       inputSchema: z.object({
-              id: z.string(), frameId: z.string().optional(),
-            }),
+        id: z.string(), frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: true },
     },
     frameScoped(getClient, async (c, f, { id }: { id: string; frameId?: string }) =>
@@ -138,11 +138,11 @@ export function registerEventTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Update calendar-event notification settings.',
       inputSchema: z.object({
-              on_time: z.boolean().optional(),
-              early: z.boolean().optional(),
-              early_minutes_before: z.number().optional(),
-              frameId: z.string().optional(),
-            }),
+        on_time: z.boolean().optional(),
+        early: z.boolean().optional(),
+        early_minutes_before: z.number().optional(),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { on_time, early, early_minutes_before }: { on_time?: boolean; early?: boolean; early_minutes_before?: number; frameId?: string }) => {

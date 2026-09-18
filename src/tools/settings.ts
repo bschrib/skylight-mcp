@@ -8,18 +8,18 @@ export function registerSettingsTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Update Skylight frame display/sleep settings.',
       inputSchema: z.object({
-              brightness: z.number().optional(),
-              slideshow_speed: z.number().optional(),
-              slideshow_style: z.string().optional(),
-              sleeps_at: z.string().optional().describe('Time the frame sleeps, e.g. "22:00".'),
-              wakes_at: z.string().optional(),
-              show_caption: z.boolean().optional(),
-              show_heart: z.boolean().optional(),
-              blur_effect: z.boolean().optional(),
-              side_by_side: z.boolean().optional(),
-              open_to_public: z.boolean().optional(),
-              frameId: z.string().optional(),
-            }),
+        brightness: z.number().optional(),
+        slideshow_speed: z.number().optional(),
+        slideshow_style: z.string().optional(),
+        sleeps_at: z.string().optional().describe('Time the frame sleeps, e.g. "22:00".'),
+        wakes_at: z.string().optional(),
+        show_caption: z.boolean().optional(),
+        show_heart: z.boolean().optional(),
+        blur_effect: z.boolean().optional(),
+        side_by_side: z.boolean().optional(),
+        open_to_public: z.boolean().optional(),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { frameId: _frameId, ...rest }) => {
@@ -44,10 +44,10 @@ export function registerSettingsTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Update the frame profile (name, birthday).',
       inputSchema: z.object({
-              name: z.string().optional(),
-              birthday: z.string().optional().describe('YYYY-MM-DD'),
-              frameId: z.string().optional(),
-            }),
+        name: z.string().optional(),
+        birthday: z.string().optional().describe('YYYY-MM-DD'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { name, birthday }: { name?: string; birthday?: string; frameId?: string }) => {
@@ -61,10 +61,10 @@ export function registerSettingsTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Update household configuration.',
       inputSchema: z.object({
-              disney_profile_pictures: z.boolean().optional(),
-              disney_screensaver: z.boolean().optional(),
-              frameId: z.string().optional(),
-            }),
+        disney_profile_pictures: z.boolean().optional(),
+        disney_screensaver: z.boolean().optional(),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { disney_profile_pictures, disney_screensaver }: { disney_profile_pictures?: boolean; disney_screensaver?: boolean; frameId?: string }) => {

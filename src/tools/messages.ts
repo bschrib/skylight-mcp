@@ -8,8 +8,8 @@ export function registerMessageTools(server: McpServer, getClient: GetClient) {
     {
       description: 'List messages posted to the Skylight frame.',
       inputSchema: z.object({
-              frameId: z.string().optional(),
-            }),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: true },
     },
     frameScoped(getClient, async (c, f) =>
@@ -21,8 +21,8 @@ export function registerMessageTools(server: McpServer, getClient: GetClient) {
     {
       description: 'List photo albums on the Skylight frame.',
       inputSchema: z.object({
-              frameId: z.string().optional(),
-            }),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: true },
     },
     frameScoped(getClient, async (c, f) =>
@@ -34,9 +34,9 @@ export function registerMessageTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Get one frame message.',
       inputSchema: z.object({
-              id: z.string(),
-              frameId: z.string().optional(),
-            }),
+        id: z.string(),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: true },
     },
     frameScoped(getClient, async (c, f, { id }: { id: string; frameId?: string }) =>
@@ -48,9 +48,9 @@ export function registerMessageTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Create a photo album.',
       inputSchema: z.object({
-              title: z.string(),
-              frameId: z.string().optional(),
-            }),
+        title: z.string(),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { title }: { title: string; frameId?: string }) =>
@@ -62,9 +62,9 @@ export function registerMessageTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Delete a photo album.',
       inputSchema: z.object({
-              id: idParam,
-              frameId: z.string().optional(),
-            }),
+        id: idParam,
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id }: { id: string | number; frameId?: string }) => {
@@ -78,11 +78,11 @@ export function registerMessageTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Update a photo album (rename, hide from slideshow).',
       inputSchema: z.object({
-              id: idParam,
-              title: z.string().optional(),
-              exclude_from_slideshow: z.boolean().optional().describe('Hide this album from the frame slideshow.'),
-              frameId: z.string().optional(),
-            }),
+        id: idParam,
+        title: z.string().optional(),
+        exclude_from_slideshow: z.boolean().optional().describe('Hide this album from the frame slideshow.'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id, title, exclude_from_slideshow }: { id: string | number; title?: string; exclude_from_slideshow?: boolean; frameId?: string }) => {
@@ -96,10 +96,10 @@ export function registerMessageTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Add messages/photos to albums.',
       inputSchema: z.object({
-              album_ids: idArrayParam,
-              message_ids: idArrayParam,
-              frameId: z.string().optional(),
-            }),
+        album_ids: idArrayParam,
+        message_ids: idArrayParam,
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { album_ids, message_ids }: { album_ids: Array<string | number>; message_ids: Array<string | number>; frameId?: string }) =>
@@ -111,10 +111,10 @@ export function registerMessageTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Remove messages/photos from albums.',
       inputSchema: z.object({
-              album_ids: idArrayParam,
-              message_ids: idArrayParam,
-              frameId: z.string().optional(),
-            }),
+        album_ids: idArrayParam,
+        message_ids: idArrayParam,
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { album_ids, message_ids }: { album_ids: Array<string | number>; message_ids: Array<string | number>; frameId?: string }) =>
@@ -126,10 +126,10 @@ export function registerMessageTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Copy messages/photos from this frame to other frames on the account (inferred from the app bundle, not live-verified).',
       inputSchema: z.object({
-              message_ids: idArrayParam.describe('Message/photo ids to copy.'),
-              new_frame_ids: idArrayParam.describe('Destination frame ids (see skylight_list_frames).'),
-              frameId: z.string().optional(),
-            }),
+        message_ids: idArrayParam.describe('Message/photo ids to copy.'),
+        new_frame_ids: idArrayParam.describe('Destination frame ids (see skylight_list_frames).'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { message_ids, new_frame_ids }: { message_ids: Array<string | number>; new_frame_ids: Array<string | number>; frameId?: string }) => {
@@ -143,10 +143,10 @@ export function registerMessageTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Comment on a frame message/photo.',
       inputSchema: z.object({
-              id: z.string(),
-              body: z.string().describe('Comment text.'),
-              frameId: z.string().optional(),
-            }),
+        id: z.string(),
+        body: z.string().describe('Comment text.'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id, body }: { id: string; body: string; frameId?: string }) =>
@@ -158,10 +158,10 @@ export function registerMessageTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Set a message/photo caption.',
       inputSchema: z.object({
-              id: z.string(),
-              caption: z.string(),
-              frameId: z.string().optional(),
-            }),
+        id: z.string(),
+        caption: z.string(),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id, caption }: { id: string; caption: string; frameId?: string }) =>
@@ -173,9 +173,9 @@ export function registerMessageTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Like a frame message/photo.',
       inputSchema: z.object({
-              id: z.string(),
-              frameId: z.string().optional(),
-            }),
+        id: z.string(),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id }: { id: string; frameId?: string }) => {
@@ -189,9 +189,9 @@ export function registerMessageTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Remove a like from a message/photo.',
       inputSchema: z.object({
-              id: idParam,
-              frameId: z.string().optional(),
-            }),
+        id: idParam,
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id }: { id: string | number; frameId?: string }) => {
@@ -205,9 +205,9 @@ export function registerMessageTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Bulk-delete messages/photos from the frame.',
       inputSchema: z.object({
-              message_ids: idArrayParam.describe('Message/photo ids to delete.'),
-              frameId: z.string().optional(),
-            }),
+        message_ids: idArrayParam.describe('Message/photo ids to delete.'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { message_ids }: { message_ids: Array<string | number>; frameId?: string }) => {
@@ -222,9 +222,9 @@ export function registerMessageTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Delete a frame message/photo.',
       inputSchema: z.object({
-              id: idParam,
-              frameId: z.string().optional(),
-            }),
+        id: idParam,
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id }: { id: string | number; frameId?: string }) => {

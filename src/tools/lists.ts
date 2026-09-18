@@ -8,8 +8,8 @@ export function registerListTools(server: McpServer, getClient: GetClient) {
     {
       description: 'List all lists on a Skylight frame.',
       inputSchema: z.object({
-              frameId: z.string().optional(),
-            }),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: true },
     },
     frameScoped(getClient, async (c, f) =>
@@ -21,9 +21,9 @@ export function registerListTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Get all items in a specific list on a Skylight frame.',
       inputSchema: z.object({
-              listId: z.string(),
-              frameId: z.string().optional(),
-            }),
+        listId: z.string(),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: true },
     },
     frameScoped(getClient, async (c, f, { listId }: { listId: string; frameId?: string }) =>
@@ -35,11 +35,11 @@ export function registerListTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Create a new list on a Skylight frame.',
       inputSchema: z.object({
-              label: z.string(),
-              color: z.string().describe('Hex color, e.g. #42D792 (required).'),
-              kind: z.enum(['shopping', 'to_do']).describe('List type (required).'),
-              frameId: z.string().optional(),
-            }),
+        label: z.string(),
+        color: z.string().describe('Hex color, e.g. #42D792 (required).'),
+        kind: z.enum(['shopping', 'to_do']).describe('List type (required).'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { label, color, kind }: { label: string; color: string; kind: 'shopping' | 'to_do'; frameId?: string }) => {
@@ -53,10 +53,10 @@ export function registerListTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Add an item to a list on a Skylight frame.',
       inputSchema: z.object({
-              listId: z.string(),
-              label: z.string(),
-              frameId: z.string().optional(),
-            }),
+        listId: z.string(),
+        label: z.string(),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { listId, label }: { listId: string; label: string; frameId?: string }) => {
@@ -70,13 +70,13 @@ export function registerListTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Update a list item on a Skylight frame.',
       inputSchema: z.object({
-              listId: z.string(),
-              itemId: z.string(),
-              label: z.string().optional(),
-              checked: z.boolean().optional().describe('true marks the item completed, false reopens it.'),
-              section: z.string().nullable().optional().describe('Section name (null to clear).'),
-              frameId: z.string().optional(),
-            }),
+        listId: z.string(),
+        itemId: z.string(),
+        label: z.string().optional(),
+        checked: z.boolean().optional().describe('true marks the item completed, false reopens it.'),
+        section: z.string().nullable().optional().describe('Section name (null to clear).'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { listId, itemId, label, checked, section }: { listId: string; itemId: string; label?: string; checked?: boolean; section?: string | null; frameId?: string }) => {
@@ -91,10 +91,10 @@ export function registerListTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Delete a list item from a Skylight frame.',
       inputSchema: z.object({
-              listId: z.string(),
-              itemId: z.string(),
-              frameId: z.string().optional(),
-            }),
+        listId: z.string(),
+        itemId: z.string(),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { listId, itemId }: { listId: string; itemId: string; frameId?: string }) => {
@@ -108,12 +108,12 @@ export function registerListTools(server: McpServer, getClient: GetClient) {
     {
       description: "Update a Skylight list's name, color, or type.",
       inputSchema: z.object({
-              listId: z.string(),
-              label: z.string().optional(),
-              color: z.string().optional(),
-              kind: z.enum(['shopping', 'to_do']).optional(),
-              frameId: z.string().optional(),
-            }),
+        listId: z.string(),
+        label: z.string().optional(),
+        color: z.string().optional(),
+        kind: z.enum(['shopping', 'to_do']).optional(),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { listId, label, color, kind }: { listId: string; label?: string; color?: string; kind?: 'shopping' | 'to_do'; frameId?: string }) => {
@@ -127,9 +127,9 @@ export function registerListTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Delete a Skylight list.',
       inputSchema: z.object({
-              listId: z.string(),
-              frameId: z.string().optional(),
-            }),
+        listId: z.string(),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { listId }: { listId: string; frameId?: string }) => {
@@ -143,11 +143,11 @@ export function registerListTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Reorder a list item.',
       inputSchema: z.object({
-              listId: z.string(),
-              itemId: z.string(),
-              afterItemId: z.string().optional().describe('Place after this item id; omit to move to the top.'),
-              frameId: z.string().optional(),
-            }),
+        listId: z.string(),
+        itemId: z.string(),
+        afterItemId: z.string().optional().describe('Place after this item id; omit to move to the top.'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { listId, itemId, afterItemId }: { listId: string; itemId: string; afterItemId?: string; frameId?: string }) => {
@@ -163,9 +163,9 @@ export function registerListTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Remove all items from a list.',
       inputSchema: z.object({
-              listId: z.string(),
-              frameId: z.string().optional(),
-            }),
+        listId: z.string(),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { listId }: { listId: string; frameId?: string }) => {
@@ -181,10 +181,10 @@ export function registerListTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Bulk-delete specific list items.',
       inputSchema: z.object({
-              listId: z.string(),
-              item_ids: idArrayParam.describe('List-item ids to delete.'),
-              frameId: z.string().optional(),
-            }),
+        listId: z.string(),
+        item_ids: idArrayParam.describe('List-item ids to delete.'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { listId, item_ids }: { listId: string; item_ids: Array<string | number>; frameId?: string }) => {
@@ -199,11 +199,11 @@ export function registerListTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Move list items into a named section (or clear it).',
       inputSchema: z.object({
-              listId: z.string(),
-              item_ids: idArrayParam.describe('List-item ids to move.'),
-              section: z.string().nullable().optional().describe('Section name to assign (null/omit to clear the section).'),
-              frameId: z.string().optional(),
-            }),
+        listId: z.string(),
+        item_ids: idArrayParam.describe('List-item ids to move.'),
+        section: z.string().nullable().optional().describe('Section name to assign (null/omit to clear the section).'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { listId, item_ids, section }: { listId: string; item_ids: Array<string | number>; section?: string | null; frameId?: string }) => {

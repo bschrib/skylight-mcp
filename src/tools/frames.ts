@@ -85,10 +85,10 @@ export function registerFrameTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Set which photo album a device displays.',
       inputSchema: z.object({
-              id: idParam.describe('Device id (from skylight_list_devices).'),
-              current_album_id: idParam.describe('Album id to display on this device.'),
-              frameId: z.string().optional(),
-            }),
+        id: idParam.describe('Device id (from skylight_list_devices).'),
+        current_album_id: idParam.describe('Album id to display on this device.'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id, current_album_id }: { id: string | number; current_album_id: string | number; frameId?: string }) => {
@@ -102,10 +102,10 @@ export function registerFrameTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Rename a Skylight device.',
       inputSchema: z.object({
-              id: idParam.describe('Device id (from skylight_list_devices).'),
-              name: z.string().describe('New device name.'),
-              frameId: z.string().optional(),
-            }),
+        id: idParam.describe('Device id (from skylight_list_devices).'),
+        name: z.string().describe('New device name.'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id, name }: { id: string | number; name: string; frameId?: string }) => {
