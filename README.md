@@ -8,6 +8,12 @@ MCP server for [Skylight Calendar](https://www.ourskylight.com) — 114 tools ac
 
 Every API request carries the `skylight-api-version: 2026-05-01` header (matching the official mobile app); without it some features 422 with "API version does not support …".
 
+## MCP protocol support
+
+The server uses the official TypeScript SDK v2 and supports the stateless `2026-07-28` protocol revision over stdio. Clients can discover and call tools without an initialization handshake. Existing clients can still use the `2025-11-25` handshake.
+
+The transport remains stdio. A host can expose it over authenticated HTTP. This package does not open a network listener.
+
 ## Auth
 
 The server uses a headless email+password OAuth2 authorization-code flow — no SSO, no 2FA, no browser extension required. Configure it with `SKYLIGHT_REFRESH_TOKEN` if you already hold a token, or `SKYLIGHT_EMAIL` + `SKYLIGHT_PASSWORD` to log in for one.

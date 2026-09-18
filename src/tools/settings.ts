@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { McpServer } from '@modelcontextprotocol/server';
 import { textContent, flattenJsonApi, pruneUndefined, frameScoped, type GetClient, type JsonApiDoc } from './_shared.js';
 
 export function registerSettingsTools(server: McpServer, getClient: GetClient) {
@@ -7,19 +7,19 @@ export function registerSettingsTools(server: McpServer, getClient: GetClient) {
     'skylight_update_frame',
     {
       description: 'Update Skylight frame display/sleep settings.',
-      inputSchema: {
-        brightness: z.number().optional(),
-        slideshow_speed: z.number().optional(),
-        slideshow_style: z.string().optional(),
-        sleeps_at: z.string().optional().describe('Time the frame sleeps, e.g. "22:00".'),
-        wakes_at: z.string().optional(),
-        show_caption: z.boolean().optional(),
-        show_heart: z.boolean().optional(),
-        blur_effect: z.boolean().optional(),
-        side_by_side: z.boolean().optional(),
-        open_to_public: z.boolean().optional(),
-        frameId: z.string().optional(),
-      },
+      inputSchema: z.object({
+              brightness: z.number().optional(),
+              slideshow_speed: z.number().optional(),
+              slideshow_style: z.string().optional(),
+              sleeps_at: z.string().optional().describe('Time the frame sleeps, e.g. "22:00".'),
+              wakes_at: z.string().optional(),
+              show_caption: z.boolean().optional(),
+              show_heart: z.boolean().optional(),
+              blur_effect: z.boolean().optional(),
+              side_by_side: z.boolean().optional(),
+              open_to_public: z.boolean().optional(),
+              frameId: z.string().optional(),
+            }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { frameId: _frameId, ...rest }) => {
@@ -32,7 +32,7 @@ export function registerSettingsTools(server: McpServer, getClient: GetClient) {
     'skylight_rename_frame',
     {
       description: 'Rename a Skylight frame.',
-      inputSchema: { name: z.string(), frameId: z.string().optional() },
+      inputSchema: z.object({ name: z.string(), frameId: z.string().optional() }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { name }: { name: string; frameId?: string }) =>
@@ -43,11 +43,11 @@ export function registerSettingsTools(server: McpServer, getClient: GetClient) {
     'skylight_update_profile',
     {
       description: 'Update the frame profile (name, birthday).',
-      inputSchema: {
-        name: z.string().optional(),
-        birthday: z.string().optional().describe('YYYY-MM-DD'),
-        frameId: z.string().optional(),
-      },
+      inputSchema: z.object({
+              name: z.string().optional(),
+              birthday: z.string().optional().describe('YYYY-MM-DD'),
+              frameId: z.string().optional(),
+            }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { name, birthday }: { name?: string; birthday?: string; frameId?: string }) => {
@@ -60,11 +60,11 @@ export function registerSettingsTools(server: McpServer, getClient: GetClient) {
     'skylight_update_household_config',
     {
       description: 'Update household configuration.',
-      inputSchema: {
-        disney_profile_pictures: z.boolean().optional(),
-        disney_screensaver: z.boolean().optional(),
-        frameId: z.string().optional(),
-      },
+      inputSchema: z.object({
+              disney_profile_pictures: z.boolean().optional(),
+              disney_screensaver: z.boolean().optional(),
+              frameId: z.string().optional(),
+            }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { disney_profile_pictures, disney_screensaver }: { disney_profile_pictures?: boolean; disney_screensaver?: boolean; frameId?: string }) => {
@@ -77,7 +77,7 @@ export function registerSettingsTools(server: McpServer, getClient: GetClient) {
     'skylight_set_reminder_profile',
     {
       description: 'Set the global reminder cadence (how often Skylight nudges about reminders).',
-      inputSchema: { interval_weeks: z.number().describe('How many weeks between reminder nudges.') },
+      inputSchema: z.object({ interval_weeks: z.number().describe('How many weeks between reminder nudges.') }),
       annotations: { readOnlyHint: false },
     },
     async ({ interval_weeks }) => {

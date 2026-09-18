@@ -19,7 +19,7 @@ function registeredApplyToEnums(): Record<string, string[]> {
   const schemas: Record<string, any> = {};
   const server = {
     registerTool: (name: string, cfg: any) => {
-      schemas[name] = cfg.inputSchema;
+      schemas[name] = cfg.inputSchema.shape;
     },
   } as any;
   const { client } = makeClient();

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { McpServer } from '@modelcontextprotocol/server';
 import { textContent, flattenJsonApi, pruneUndefined, frameScoped, idParam, type GetClient, type JsonApiDoc, type RelatedResource, type ResourceRef } from './_shared.js';
 import { affectsMultipleOccurrences, previewUnlessConfirmed, schemaConfirm } from './_confirm.js';
 
@@ -68,9 +68,9 @@ export function registerMealTools(server: McpServer, getClient: GetClient) {
     'skylight_list_recipes',
     {
       description: 'List meal recipes for the frame.',
-      inputSchema: {
-        frameId: z.string().optional(),
-      },
+      inputSchema: z.object({
+              frameId: z.string().optional(),
+            }),
       annotations: { readOnlyHint: true },
     },
     frameScoped(getClient, async (c, f) =>
@@ -81,9 +81,9 @@ export function registerMealTools(server: McpServer, getClient: GetClient) {
     'skylight_list_meal_categories',
     {
       description: 'List meal categories for the frame.',
-      inputSchema: {
-        frameId: z.string().optional(),
-      },
+      inputSchema: z.object({
+              frameId: z.string().optional(),
+            }),
       annotations: { readOnlyHint: true },
     },
     frameScoped(getClient, async (c, f) =>
@@ -94,11 +94,11 @@ export function registerMealTools(server: McpServer, getClient: GetClient) {
     'skylight_list_meals',
     {
       description: 'List planned meals (meal sittings) in a date range — what is on the meal plan for each day. Each sitting carries the dates it falls on in its `instances` array, its meal slot in `meal_category` (breakfast/lunch/dinner), its linked recipe in `meal_recipe`, and the family members it is assigned to in `profiles`.',
-      inputSchema: {
-        date_min: z.string().describe('YYYY-MM-DD inclusive lower bound (required by the API).'),
-        date_max: z.string().describe('YYYY-MM-DD inclusive upper bound (required by the API).'),
-        frameId: z.string().optional(),
-      },
+      inputSchema: z.object({
+              date_min: z.string().describe('YYYY-MM-DD inclusive lower bound (required by the API).'),
+              date_max: z.string().describe('YYYY-MM-DD inclusive upper bound (required by the API).'),
+              frameId: z.string().optional(),
+            }),
       annotations: { readOnlyHint: true },
     },
     frameScoped(getClient, async (c, f, { date_min, date_max }: { date_min: string; date_max: string; frameId?: string }) => {
@@ -113,10 +113,10 @@ export function registerMealTools(server: McpServer, getClient: GetClient) {
     'skylight_get_recipe',
     {
       description: 'Get one meal recipe.',
-      inputSchema: {
-        id: z.string(),
-        frameId: z.string().optional(),
-      },
+      inputSchema: z.object({
+              id: z.string(),
+              frameId: z.string().optional(),
+            }),
       annotations: { readOnlyHint: true },
     },
     frameScoped(getClient, async (c, f, { id }: { id: string; frameId?: string }) =>
@@ -127,12 +127,12 @@ export function registerMealTools(server: McpServer, getClient: GetClient) {
     'skylight_create_recipe',
     {
       description: 'Create a meal recipe.',
-      inputSchema: {
-        meal_category_id: idParam.describe('Meal category id (from list_meal_categories, required).'),
-        summary: z.string().describe('Recipe title.'),
-        description: z.string().optional(),
-        frameId: z.string().optional(),
-      },
+      inputSchema: z.object({
+              meal_category_id: idParam.describe('Meal category id (from list_meal_categories, required).'),
+              summary: z.string().describe('Recipe title.'),
+              description: z.string().optional(),
+              frameId: z.string().optional(),
+            }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { meal_category_id, summary, description }: { meal_category_id: string | number; summary: string; description?: string; frameId?: string }) => {
@@ -147,13 +147,13 @@ export function registerMealTools(server: McpServer, getClient: GetClient) {
     'skylight_update_recipe',
     {
       description: 'Update a meal recipe.',
-      inputSchema: {
-        id: z.string(),
-        meal_category_id: idParam.optional(),
-        summary: z.string().optional(),
-        description: z.string().optional(),
-        frameId: z.string().optional(),
-      },
+      inputSchema: z.object({
+              id: z.string(),
+              meal_category_id: idParam.optional(),
+              summary: z.string().optional(),
+              description: z.string().optional(),
+              frameId: z.string().optional(),
+            }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id, meal_category_id, summary, description }: { id: string; meal_category_id?: string | number; summary?: string; description?: string; frameId?: string }) => {
@@ -168,10 +168,10 @@ export function registerMealTools(server: McpServer, getClient: GetClient) {
     'skylight_delete_recipe',
     {
       description: 'Delete a meal recipe.',
-      inputSchema: {
-        id: z.string(),
-        frameId: z.string().optional(),
-      },
+      inputSchema: z.object({
+              id: z.string(),
+              frameId: z.string().optional(),
+            }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id }: { id: string; frameId?: string }) => {
@@ -184,18 +184,18 @@ export function registerMealTools(server: McpServer, getClient: GetClient) {
     'skylight_plan_meal',
     {
       description: 'Plan a meal on a date (optionally repeating, link a recipe, add to grocery list).',
-      inputSchema: {
-        meal_category_id: idParam.describe('Meal category id (breakfast/lunch/dinner — from skylight_list_meal_categories).'),
-        date: z.string().describe('YYYY-MM-DD the meal is planned for.'),
-        summary: z.string().describe('Meal name. LIVE-VERIFIED: when meal_recipe_id is set, this must be BLANK — pass "" and the sitting inherits its name from the linked recipe. Sending a non-blank summary together with a recipe id returns 422 {"errors":{"summary":["must be blank"]}}.'),
-        description: z.string().optional().describe('Ingredients / instructions.'),
-        meal_recipe_id: idParam.optional().describe('Link an existing recipe.'),
-        rrule: z.string().optional().describe('iCal RRULE string for a repeating meal, e.g. "FREQ=DAILY;INTERVAL=1;UNTIL=20260626T235959Z" (meals use a plain rrule string, NOT an array).'),
-        note: z.string().optional(),
-        add_to_grocery_list: z.boolean().optional(),
-        saveToRecipeBox: z.boolean().optional(),
-        frameId: z.string().optional(),
-      },
+      inputSchema: z.object({
+              meal_category_id: idParam.describe('Meal category id (breakfast/lunch/dinner — from skylight_list_meal_categories).'),
+              date: z.string().describe('YYYY-MM-DD the meal is planned for.'),
+              summary: z.string().describe('Meal name. LIVE-VERIFIED: when meal_recipe_id is set, this must be BLANK — pass "" and the sitting inherits its name from the linked recipe. Sending a non-blank summary together with a recipe id returns 422 {"errors":{"summary":["must be blank"]}}.'),
+              description: z.string().optional().describe('Ingredients / instructions.'),
+              meal_recipe_id: idParam.optional().describe('Link an existing recipe.'),
+              rrule: z.string().optional().describe('iCal RRULE string for a repeating meal, e.g. "FREQ=DAILY;INTERVAL=1;UNTIL=20260626T235959Z" (meals use a plain rrule string, NOT an array).'),
+              note: z.string().optional(),
+              add_to_grocery_list: z.boolean().optional(),
+              saveToRecipeBox: z.boolean().optional(),
+              frameId: z.string().optional(),
+            }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { meal_recipe_id, meal_category_id, date, rrule, summary, description, note, add_to_grocery_list, saveToRecipeBox }: { meal_recipe_id?: string | number; meal_category_id: string | number; date: string; rrule?: string; summary: string; description?: string; note?: string; add_to_grocery_list?: boolean; saveToRecipeBox?: boolean; frameId?: string }) => {
@@ -251,29 +251,29 @@ export function registerMealTools(server: McpServer, getClient: GetClient) {
     'skylight_update_meal',
     {
       description: "Update a planned meal (meal sitting) — change its name, recipe, category/slot, notes, date or repeat rule. Targets one occurrence by its date and applies the change at the chosen recurrence scope. For a recurring meal, note that apply_to:'one' and 'future' SPLIT the series into additional sittings rather than editing in place; re-run skylight_list_meals afterward to see the resulting shape.",
-      inputSchema: {
-        id: idParam.describe('Meal sitting id (from skylight_list_meals).'),
-        // Validated, unlike the same-named param on `skylight_complete_chore_instance`,
-        // because THIS one is interpolated into the request PATH. A model passing
-        // `2026-09-08T00:00:00Z` gets a routing 404 that reads like "no such
-        // sitting" rather than a schema error naming the real problem. In
-        // chores.ts the value rides in the body, where a bad format surfaces as a
-        // 422 that says so — so this is not a repo-wide convention change.
-        instance_date: z
-          .string()
-          .regex(/^\d{4}-\d{2}-\d{2}$/, 'instance_date must be exactly YYYY-MM-DD (no time component)')
-          .describe("YYYY-MM-DD of the occurrence to act on — must be one of that sitting's `instances`."),
-        apply_to: APPLY_TO,
-        summary: z.string().optional().describe('New meal name. The create route 422s when this is non-blank and meal_recipe_id is also set; whether PATCH enforces the same rule is UNVERIFIED, so prefer setting one or the other.'),
-        description: z.string().optional().describe('Ingredients / instructions.'),
-        note: z.string().optional(),
-        date: z.string().optional().describe('YYYY-MM-DD to move the meal to.'),
-        rrule: z.string().optional().describe('Replacement iCal RRULE string (plain string, NOT an array).'),
-        meal_category_id: idParam.optional().describe('Move to another slot (breakfast/lunch/dinner).'),
-        meal_recipe_id: idParam.optional().describe('Link a different recipe.'),
-        frameId: z.string().optional(),
-        confirm: schemaConfirm,
-      },
+      inputSchema: z.object({
+              id: idParam.describe('Meal sitting id (from skylight_list_meals).'),
+              // Validated, unlike the same-named param on `skylight_complete_chore_instance`,
+              // because THIS one is interpolated into the request PATH. A model passing
+              // `2026-09-08T00:00:00Z` gets a routing 404 that reads like "no such
+              // sitting" rather than a schema error naming the real problem. In
+              // chores.ts the value rides in the body, where a bad format surfaces as a
+              // 422 that says so — so this is not a repo-wide convention change.
+              instance_date: z
+                .string()
+                .regex(/^\d{4}-\d{2}-\d{2}$/, 'instance_date must be exactly YYYY-MM-DD (no time component)')
+                .describe("YYYY-MM-DD of the occurrence to act on — must be one of that sitting's `instances`."),
+              apply_to: APPLY_TO,
+              summary: z.string().optional().describe('New meal name. The create route 422s when this is non-blank and meal_recipe_id is also set; whether PATCH enforces the same rule is UNVERIFIED, so prefer setting one or the other.'),
+              description: z.string().optional().describe('Ingredients / instructions.'),
+              note: z.string().optional(),
+              date: z.string().optional().describe('YYYY-MM-DD to move the meal to.'),
+              rrule: z.string().optional().describe('Replacement iCal RRULE string (plain string, NOT an array).'),
+              meal_category_id: idParam.optional().describe('Move to another slot (breakfast/lunch/dinner).'),
+              meal_recipe_id: idParam.optional().describe('Link a different recipe.'),
+              frameId: z.string().optional(),
+              confirm: schemaConfirm,
+            }),
       // Destructive despite being an "update": per the live findings above,
       // apply_to 'one' and 'future' do not edit in place — they rewrite the
       // original series' rrule and spawn additional sittings.
@@ -317,22 +317,22 @@ export function registerMealTools(server: McpServer, getClient: GetClient) {
     'skylight_delete_meal',
     {
       description: "Remove a planned meal (meal sitting) from the meal plan. Deletes one occurrence, this-and-future occurrences, or the whole series depending on apply_to. There is no undo — without confirm:true this returns a dry-run preview of exactly what would be deleted and makes NO network call; with confirm:true it deletes.",
-      inputSchema: {
-        id: idParam.describe('Meal sitting id (from skylight_list_meals).'),
-        // Validated, unlike the same-named param on `skylight_complete_chore_instance`,
-        // because THIS one is interpolated into the request PATH. A model passing
-        // `2026-09-08T00:00:00Z` gets a routing 404 that reads like "no such
-        // sitting" rather than a schema error naming the real problem. In
-        // chores.ts the value rides in the body, where a bad format surfaces as a
-        // 422 that says so — so this is not a repo-wide convention change.
-        instance_date: z
-          .string()
-          .regex(/^\d{4}-\d{2}-\d{2}$/, 'instance_date must be exactly YYYY-MM-DD (no time component)')
-          .describe("YYYY-MM-DD of the occurrence to act on — must be one of that sitting's `instances`."),
-        apply_to: APPLY_TO,
-        frameId: z.string().optional(),
-        confirm: schemaConfirm,
-      },
+      inputSchema: z.object({
+              id: idParam.describe('Meal sitting id (from skylight_list_meals).'),
+              // Validated, unlike the same-named param on `skylight_complete_chore_instance`,
+              // because THIS one is interpolated into the request PATH. A model passing
+              // `2026-09-08T00:00:00Z` gets a routing 404 that reads like "no such
+              // sitting" rather than a schema error naming the real problem. In
+              // chores.ts the value rides in the body, where a bad format surfaces as a
+              // 422 that says so — so this is not a repo-wide convention change.
+              instance_date: z
+                .string()
+                .regex(/^\d{4}-\d{2}-\d{2}$/, 'instance_date must be exactly YYYY-MM-DD (no time component)')
+                .describe("YYYY-MM-DD of the occurrence to act on — must be one of that sitting's `instances`."),
+              apply_to: APPLY_TO,
+              frameId: z.string().optional(),
+              confirm: schemaConfirm,
+            }),
       annotations: { readOnlyHint: false, destructiveHint: true },
     },
     async (args: { id: string | number; instance_date: string; apply_to: 'one' | 'future' | 'all'; frameId?: string; confirm?: boolean }) => {
@@ -359,11 +359,11 @@ export function registerMealTools(server: McpServer, getClient: GetClient) {
     'skylight_add_recipe_to_grocery_list',
     {
       description: "Add a recipe's ingredients to a grocery list.",
-      inputSchema: {
-        id: z.string(),
-        list_id: idParam.optional().describe('Target grocery list id; omit for the default grocery list.'),
-        frameId: z.string().optional(),
-      },
+      inputSchema: z.object({
+              id: z.string(),
+              list_id: idParam.optional().describe('Target grocery list id; omit for the default grocery list.'),
+              frameId: z.string().optional(),
+            }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id, list_id }: { id: string; list_id?: string | number; frameId?: string }) => {
