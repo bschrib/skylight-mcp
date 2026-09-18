@@ -1,6 +1,6 @@
 {
   "name": "skylight-mcp",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "mcpName": "io.github.chrischall/skylight-mcp",
   "description": "Skylight Calendar MCP \u2014 read/write family calendar events, chores, rewards, and shared lists.",
   "author": "Claude Code (AI) <https://www.anthropic.com/claude>",
@@ -33,7 +33,7 @@
   ],
   "scripts": {
     "build": "tsc && npm run bundle",
-    "bundle": "esbuild src/index.ts --bundle --platform=node --format=esm --external:dotenv --banner:js='import { createRequire as __createRequire } from \"module\"; const require = __createRequire(import.meta.url);' --outfile=dist/bundle.js",
+    "bundle": "esbuild src/index.ts --bundle --alias:zod/v4=./node_modules/zod/v4/index.cjs --platform=node --format=esm --external:dotenv --banner:js='import { createRequire as __createRequire } from \"module\"; const require = __createRequire(import.meta.url);' --outfile=dist/bundle.js",
     "dev": "node --env-file=.env dist/index.js",
     "test": "npm run build && vitest run",
     "test:coverage": "npm run build && vitest run --coverage",
@@ -42,12 +42,12 @@
   },
   "dependencies": {
     "@chrischall/mcp-utils": "^0.28.0",
-    "@modelcontextprotocol/client": "^2.0.0",
     "@modelcontextprotocol/server": "^2.0.0",
     "dotenv": "^17.4.2",
-    "zod": "^4.6.5"
+    "zod": "^4.6.2"
   },
   "devDependencies": {
+    "@modelcontextprotocol/client": "^2.0.0",
     "@types/node": "^26.0.0",
     "@vitest/coverage-v8": "^5.0.0",
     "esbuild": "^0.28.0",

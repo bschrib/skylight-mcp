@@ -27,7 +27,7 @@ const getClient = makeGetClient();
 
 serveStdio(() => createMcpServer<typeof getClient>({
   name: 'skylight-mcp',
-  version: '0.10.1', // x-release-please-version
+  version: '0.10.2', // x-release-please-version
   banner: 'skylight-mcp ready',
   deps: getClient,
   tools: [

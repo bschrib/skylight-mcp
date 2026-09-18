@@ -2,8 +2,6 @@
 //
 // Why this exists: README.md's tool table drifted seven tools behind the
 // server (issue #99) — it advertised 103 tools and had 103 self-consistent
-import type { McpServer } from '@modelcontextprotocol/server';
-
 // rows while `src/tools/` registered 110, so nothing was internally
 // inconsistent enough to notice. Avatar, category, photo-upload and
 // auto-creation tools shipped with no README row at all.
@@ -19,6 +17,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import type { McpServer } from '@modelcontextprotocol/server';
 import { registerFrameTools } from '../src/tools/frames.js';
 import { registerSettingsTools } from '../src/tools/settings.js';
 import { registerCalendarTools } from '../src/tools/calendars.js';

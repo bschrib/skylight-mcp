@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest';
-import { z } from 'zod';
 import { registerMealTools } from '../../src/tools/meals.js';
 import { makeClient } from './_setup.js';
 

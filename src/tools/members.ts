@@ -15,9 +15,9 @@ export function registerMemberTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Resolve a family-member name to its category id (used by chores/rewards). On a name match returns { matched: true, members }; if nothing matches it returns { matched: false, members, note } listing all members.',
       inputSchema: z.object({
-              name: z.string().describe('Family-member name (or partial) to resolve to a category id.'),
-              frameId: z.string().optional(),
-            }),
+        name: z.string().describe('Family-member name (or partial) to resolve to a category id.'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: true },
     },
     frameScoped(getClient, async (c, f, { name }: { name: string; frameId?: string }) => {
@@ -40,9 +40,9 @@ export function registerMemberTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Invite a user to the frame by email.',
       inputSchema: z.object({
-              email: z.string().describe('Email to invite to the frame.'),
-              frameId: z.string().optional(),
-            }),
+        email: z.string().describe('Email to invite to the frame.'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { email }: { email: string; frameId?: string }) =>
@@ -81,10 +81,10 @@ export function registerMemberTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Delete a category / family member.',
       inputSchema: z.object({
-              id: idParam,
-              reassign_to_category_id: idParam.optional().describe("Move this member's items to another category id instead of orphaning them."),
-              frameId: z.string().optional(),
-            }),
+        id: idParam,
+        reassign_to_category_id: idParam.optional().describe("Move this member's items to another category id instead of orphaning them."),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id, reassign_to_category_id }: { id: string | number; reassign_to_category_id?: string | number; frameId?: string }) => {
@@ -98,11 +98,11 @@ export function registerMemberTools(server: McpServer, getClient: GetClient) {
     {
       description: "Update a family member's profile (birthday, dietary preferences). The member's name is the category label — set it via skylight_update_category.",
       inputSchema: z.object({
-              id: idParam.describe('Category/member id.'),
-              birthday: z.string().optional().describe('YYYY-MM-DD'),
-              dietary_preferences: z.string().optional(),
-              frameId: z.string().optional(),
-            }),
+        id: idParam.describe('Category/member id.'),
+        birthday: z.string().optional().describe('YYYY-MM-DD'),
+        dietary_preferences: z.string().optional(),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id, birthday, dietary_preferences }: { id: string | number; birthday?: string; dietary_preferences?: string; frameId?: string }) => {
@@ -138,11 +138,11 @@ export function registerMemberTools(server: McpServer, getClient: GetClient) {
     {
       description: "Set a family member's avatar to a custom photo from a local image file (uploaded as multipart/form-data). For a preset emoji avatar, use skylight_list_avatars + the avatar_id on create/update instead. Without confirm:true it returns a dry-run preview echoing the resolved absolute image_path + detected mime and makes NO network call; with confirm:true it uploads.",
       inputSchema: z.object({
-              id: idParam.describe('Category/member id.'),
-              image_path: z.string().describe('Absolute path to a local image file (jpg, png, heic, …).'),
-              frameId: z.string().optional(),
-              confirm: schemaConfirm,
-            }),
+        id: idParam.describe('Category/member id.'),
+        image_path: z.string().describe('Absolute path to a local image file (jpg, png, heic, …).'),
+        frameId: z.string().optional(),
+        confirm: schemaConfirm,
+      }),
       annotations: { readOnlyHint: false, destructiveHint: true },
     },
     async (args: { id: string | number; image_path: string; frameId?: string; confirm?: boolean }) => {
@@ -157,13 +157,13 @@ export function registerMemberTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Create a category / family member on the frame. Set linked_to_profile + selected_for_chore_chart to make it a full chore-chart member; pick avatar_id from skylight_list_avatars, or set a custom photo afterward with skylight_set_member_avatar.',
       inputSchema: z.object({
-              label: z.string().describe('Display name for the member/category.'),
-              color: z.string().optional().describe('Hex color, e.g. "#82D7DD".'),
-              linked_to_profile: z.boolean().optional().describe('Make this a full family-member profile (vs a basic label).'),
-              selected_for_chore_chart: z.boolean().optional().describe('Show this member on the chore chart.'),
-              avatar_id: idParam.optional().describe('Preset avatar id from skylight_list_avatars.'),
-              frameId: z.string().optional(),
-            }),
+        label: z.string().describe('Display name for the member/category.'),
+        color: z.string().optional().describe('Hex color, e.g. "#82D7DD".'),
+        linked_to_profile: z.boolean().optional().describe('Make this a full family-member profile (vs a basic label).'),
+        selected_for_chore_chart: z.boolean().optional().describe('Show this member on the chore chart.'),
+        avatar_id: idParam.optional().describe('Preset avatar id from skylight_list_avatars.'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { label, color, linked_to_profile, selected_for_chore_chart, avatar_id }: { label: string; color?: string; linked_to_profile?: boolean; selected_for_chore_chart?: boolean; avatar_id?: string | number; frameId?: string }) => {
@@ -177,14 +177,14 @@ export function registerMemberTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Update a category — rename/recolor, or convert a label into a family-member profile (linked_to_profile).',
       inputSchema: z.object({
-              id: idParam.describe('Category id.'),
-              label: z.string().optional().describe('Display name.'),
-              color: z.string().optional().describe('Hex color.'),
-              linked_to_profile: z.boolean().optional().describe('Set true to convert a basic label into a full family-member profile.'),
-              selected_for_chore_chart: z.boolean().optional(),
-              avatar_id: idParam.optional(),
-              frameId: z.string().optional(),
-            }),
+        id: idParam.describe('Category id.'),
+        label: z.string().optional().describe('Display name.'),
+        color: z.string().optional().describe('Hex color.'),
+        linked_to_profile: z.boolean().optional().describe('Set true to convert a basic label into a full family-member profile.'),
+        selected_for_chore_chart: z.boolean().optional(),
+        avatar_id: idParam.optional(),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id, label, color, linked_to_profile, selected_for_chore_chart, avatar_id }: { id: string | number; label?: string; color?: string; linked_to_profile?: boolean; selected_for_chore_chart?: boolean; avatar_id?: string | number; frameId?: string }) => {

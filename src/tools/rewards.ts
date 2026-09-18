@@ -19,13 +19,13 @@ export function registerRewardTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Create a reward (live-verified fields: name + description + point_value + respawn_on_redemption + category_ids).',
       inputSchema: z.object({
-              name: z.string().describe('Reward name.'),
-              description: z.string().optional(),
-              point_value: z.number().describe('Points required to redeem (required).'),
-              respawn_on_redemption: z.boolean().optional().describe('If true, the reward can be redeemed repeatedly (respawns after redemption).'),
-              category_ids: idArrayParam.describe('Family-member category ids this reward applies to (required).'),
-              frameId: z.string().optional(),
-            }),
+        name: z.string().describe('Reward name.'),
+        description: z.string().optional(),
+        point_value: z.number().describe('Points required to redeem (required).'),
+        respawn_on_redemption: z.boolean().optional().describe('If true, the reward can be redeemed repeatedly (respawns after redemption).'),
+        category_ids: idArrayParam.describe('Family-member category ids this reward applies to (required).'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { name, description, point_value, respawn_on_redemption, category_ids }: { name: string; description?: string; point_value: number; respawn_on_redemption?: boolean; category_ids: Array<string | number>; frameId?: string }) => {
@@ -39,12 +39,12 @@ export function registerRewardTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Update a reward.',
       inputSchema: z.object({
-              id: z.string(),
-              name: z.string().optional(),
-              point_value: z.number().optional(),
-              category_ids: idArrayParam.optional(),
-              frameId: z.string().optional(),
-            }),
+        id: z.string(),
+        name: z.string().optional(),
+        point_value: z.number().optional(),
+        category_ids: idArrayParam.optional(),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id, name, point_value, category_ids }: { id: string; name?: string; point_value?: number; category_ids?: Array<string | number>; frameId?: string }) => {
@@ -71,10 +71,10 @@ export function registerRewardTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Redeem a reward.',
       inputSchema: z.object({
-              id: z.string(),
-              category_id: idParam.optional().describe('Member redeeming, if required.'),
-              frameId: z.string().optional(),
-            }),
+        id: z.string(),
+        category_id: idParam.optional().describe('Member redeeming, if required.'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id, category_id }: { id: string; category_id?: string | number; frameId?: string }) => {
@@ -88,10 +88,10 @@ export function registerRewardTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Reverse a reward redemption.',
       inputSchema: z.object({
-              id: z.string(),
-              category_id: idParam.optional().describe('Member who redeemed, if required to identify the redemption to reverse.'),
-              frameId: z.string().optional(),
-            }),
+        id: z.string(),
+        category_id: idParam.optional().describe('Member who redeemed, if required to identify the redemption to reverse.'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { id, category_id }: { id: string; category_id?: string | number; frameId?: string }) => {
@@ -105,10 +105,10 @@ export function registerRewardTools(server: McpServer, getClient: GetClient) {
     {
       description: 'Grant (or deduct) reward points to family members.',
       inputSchema: z.object({
-              category_ids: idArrayParam.describe('Member category ids to grant points to.'),
-              points: z.number().describe('Points to add (can be negative to deduct).'),
-              frameId: z.string().optional(),
-            }),
+        category_ids: idArrayParam.describe('Member category ids to grant points to.'),
+        points: z.number().describe('Points to add (can be negative to deduct).'),
+        frameId: z.string().optional(),
+      }),
       annotations: { readOnlyHint: false },
     },
     frameScoped(getClient, async (c, f, { category_ids, points }: { category_ids: Array<string | number>; points: number; frameId?: string }) => {
