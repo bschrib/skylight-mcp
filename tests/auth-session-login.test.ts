@@ -529,7 +529,7 @@ describe('login', () => {
       callIndex++;
       if (callIndex === 1) return htmlResponse('<input name="authenticity_token" value="T">');
       if (callIndex === 2) return redirectResponse(`${AUTH_BASE}/auth/session/success`);
-      if (callIndex === 3) return redirectResponse('https://ourskylight.com/intermediate'); // no code
+      if (callIndex === 3) return redirectResponse(`${AUTH_BASE}/intermediate`); // no code
       if (callIndex === 4) return redirectResponse('https://ourskylight.com/welcome?code=HOPCODE'); // has code
       return jsonResponse(200, TOKEN_BODY);
     });
@@ -539,6 +539,57 @@ describe('login', () => {
     const step5 = (httpFetch as ReturnType<typeof vi.fn>).mock.calls[4];
     const params = new URLSearchParams(step5[1]?.body as string);
     expect(params.get('code')).toBe('HOPCODE');
+  });
+
+  it('resolves relative redirects against the current request URL', async () => {
+    const httpFetch = vi.fn()
+      .mockResolvedValueOnce(htmlResponse('<input name="authenticity_token" value="T">', ['session=TEST; Path=/']))
+      .mockResolvedValueOnce(redirectResponse('/auth/session/success'))
+      .mockResolvedValueOnce(redirectResponse('/oauth/continue'))
+      .mockResolvedValueOnce(redirectResponse('next'))
+      .mockResolvedValueOnce(redirectResponse('https://ourskylight.com/welcome?code=RELATIVE'))
+      .mockResolvedValueOnce(jsonResponse(200, TOKEN_BODY));
+    await login({ authBaseUrl: AUTH_BASE, email: 'a@b.com', password: 'pw' }, httpFetch);
+    expect(httpFetch.mock.calls[3][0]).toBe(`${AUTH_BASE}/oauth/continue`);
+    expect(httpFetch.mock.calls[4][0]).toBe(`${AUTH_BASE}/oauth/next`);
+    expect(httpFetch.mock.calls[4][1].headers.Cookie).toBe('session=TEST');
+  });
+
+  it.each([
+    'https://untrusted.example/continue',
+    '//untrusted.example/continue',
+    'http://app.ourskylight.com/continue',
+    'https://user@app.ourskylight.com/continue',
+    'https://untrusted.example/welcome?code=SECRET',
+    'https://ourskylight.com/other?code=SECRET',
+    'https://ourskylight.com/welcome?code=SECRET#fragment',
+    'https://user@ourskylight.com/welcome?code=SECRET',
+    'http://[invalid',
+  ])('rejects an unsafe authorization redirect without following it: %s', async (location) => {
+    const httpFetch = vi.fn()
+      .mockResolvedValueOnce(htmlResponse('<input name="authenticity_token" value="T">', ['session=TEST; Path=/']))
+      .mockResolvedValueOnce(redirectResponse('/auth/session/success'))
+      .mockResolvedValueOnce(redirectResponse(location));
+    await expect(login({ authBaseUrl: AUTH_BASE, email: 'a@b.com', password: 'pw' }, httpFetch))
+      .rejects.toThrow('Skylight login failed: unsafe authorization redirect');
+    expect(httpFetch).toHaveBeenCalledTimes(3);
+  });
+
+  it('does not fetch the callback when it has no code', async () => {
+    const httpFetch = makeHappyFetch({ step3Location: 'https://ourskylight.com/welcome' });
+    await expect(login({ authBaseUrl: AUTH_BASE, email: 'a@b.com', password: 'pw' }, httpFetch))
+      .rejects.toThrow(/could not extract authorization code/);
+    expect(httpFetch).toHaveBeenCalledTimes(3);
+  });
+
+  it('does not accept a code from a non-redirect response', async () => {
+    const httpFetch = vi.fn()
+      .mockResolvedValueOnce(htmlResponse('<input name="authenticity_token" value="T">'))
+      .mockResolvedValueOnce(redirectResponse('/auth/session/success'))
+      .mockResolvedValueOnce(new Response('', {status: 200, headers: {location: 'https://ourskylight.com/welcome?code=SECRET'}}));
+    await expect(login({ authBaseUrl: AUTH_BASE, email: 'a@b.com', password: 'pw' }, httpFetch))
+      .rejects.toThrow(/could not extract authorization code/);
+    expect(httpFetch).toHaveBeenCalledTimes(3);
   });
 
   it('uses default global fetch when httpFetch not provided (validates default param)', async () => {
@@ -571,7 +622,7 @@ describe('login', () => {
       if (callIndex === 1) return htmlResponse('<input name="authenticity_token" value="T">');
       if (callIndex === 2) return redirectResponse(`${AUTH_BASE}/auth/session/success`);
       // All step-3+ redirects go to a URL without a code param
-      return redirectResponse('https://ourskylight.com/no-code-here');
+      return redirectResponse(`${AUTH_BASE}/no-code-here`);
     });
     await expect(login({ authBaseUrl: AUTH_BASE, email: 'a@b.com', password: 'pw' }, httpFetch))
       .rejects.toThrow(/could not extract authorization code/);
