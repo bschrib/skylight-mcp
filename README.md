@@ -18,6 +18,8 @@ On first tool call, the server performs four steps against `https://app.ourskyli
 3. `GET /oauth/authorize` — send an S256 PKCE `code_challenge` (the server requires it) and receive the one-time authorization code via redirect.
 4. `POST /oauth/token` — exchange the code plus the matching `code_verifier` for a bearer `access_token` + `refresh_token` (currently a 24-hour expiry; the client reads the returned `expires_in` rather than assuming).
 
+OAuth redirects stay on the authentication origin. Relative redirects resolve against the current URL. The configured callback supplies the authorization code without receiving a request or session cookie. Unexpected destinations fail without including the redirect URL in the error.
+
 The client then refreshes the token proactively (~60 s before expiry) and reactively on any 401. No bot wall has been observed — the headless flow works directly from Node.
 
 **No env vars → clean start:** if credentials are not set, the server still starts without error. Auth is deferred to the first tool call, so MCP hosts can complete install-time tool listing before credentials are configured.
