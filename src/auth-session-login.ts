@@ -238,12 +238,25 @@ export async function login(
     });
     jar.absorb(step3.headers);
     lastStatus = step3.status;
-    const loc = step3.headers.get('location') ?? '';
-    const locParams = new URL(loc, authBaseUrl).searchParams;
-    code = locParams.get('code');
-    if (code) break;
-    // No code yet — follow the redirect if there is one
-    nextUrl = loc || null;
+    const loc = step3.headers.get('location');
+    if (step3.status < 300 || step3.status >= 400 || !loc) break;
+    const unsafeRedirect = () => new Error('Skylight login failed: unsafe authorization redirect');
+    let destination: URL;
+    try {
+      destination = new URL(loc, nextUrl);
+    } catch {
+      throw unsafeRedirect();
+    }
+    if (destination.username || destination.password || destination.hash) throw unsafeRedirect();
+    const callback = new URL(REDIRECT_URI);
+    if (destination.origin === callback.origin && destination.pathname === callback.pathname) {
+      code = destination.searchParams.get('code');
+      break;
+    }
+    if (destination.protocol !== 'https:' || destination.origin !== new URL(authBaseUrl).origin) {
+      throw unsafeRedirect();
+    }
+    nextUrl = destination.href;
     hops++;
   }
 
