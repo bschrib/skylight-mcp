@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { runMcp, loadDotenvSafely } from '@chrischall/mcp-utils';
+import { createMcpServer, loadDotenvSafely } from '@chrischall/mcp-utils';
+import { serveStdio } from '@modelcontextprotocol/server/stdio';
 import { makeGetClient } from './get-client.js';
 import { registerFrameTools } from './tools/frames.js';
 import { registerSettingsTools } from './tools/settings.js';
@@ -24,7 +25,7 @@ await loadDotenvSafely();
 // (transient login failures are retried), and single-flights concurrent logins.
 const getClient = makeGetClient();
 
-await runMcp<typeof getClient>({
+serveStdio(() => createMcpServer<typeof getClient>({
   name: 'skylight-mcp',
   version: '0.10.1', // x-release-please-version
   banner: 'skylight-mcp ready',
@@ -45,4 +46,4 @@ await runMcp<typeof getClient>({
     registerPhotoTools,
     registerHealthcheckTools,
   ],
-});
+}));
