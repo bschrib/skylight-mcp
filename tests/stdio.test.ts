@@ -1,6 +1,9 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
 import { createInterface } from 'node:readline';
+import { mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 
 let child: ChildProcessWithoutNullStreams;
 afterEach(() => child?.kill());
@@ -8,7 +11,16 @@ afterEach(() => child?.kill());
 describe('production stdio entry point', () => {
   it('supports modern discovery, all 114 tools, and credential-free healthcheck', async () => {
     const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith('SKYLIGHT_')));
-    child = spawn(process.execPath, ['dist/index.js'], {env});
+    // Stripping `SKYLIGHT_*` from the inherited env is not enough on its own:
+    // `dist/index.js` calls `loadDotenvSafely()`, and `dotenv.config()` with no
+    // explicit path resolves `.env` against the CHILD's cwd — so a developer's
+    // repo-root `.env` puts the credentials straight back and this assertion
+    // flips from `no_credential` to a live, authenticated request against
+    // app.ourskylight.com. CI has no `.env`, so it only ever failed locally.
+    // Spawning from an empty directory (with an absolute path to the entry)
+    // closes it without depending on dotenv's internals or another env switch.
+    const cwd = mkdtempSync(join(tmpdir(), 'skylight-stdio-'));
+    child = spawn(process.execPath, [resolve('dist/index.js')], {env, cwd});
     child.stderr.resume();
     const lines = createInterface({input: child.stdout})[Symbol.asyncIterator]();
     const rpc = async (method: string, params: Record<string, unknown> = {}) => {

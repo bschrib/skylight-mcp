@@ -25,9 +25,21 @@ await loadDotenvSafely();
 // (transient login failures are retried), and single-flights concurrent logins.
 const getClient = makeGetClient();
 
+// `serveStdio` is SYNCHRONOUS — it returns a `StdioServerHandle`, not a promise —
+// so there is nothing here to `await`, and no unhandled rejection to guard
+// against: the entry already wraps every async arm in
+// `.catch(error => reportError(toError(error)))`, the factory call included
+// (`await factory({ era })` sits inside one of those chains).
+//
+// What that leaves is the opposite hazard, and it is the one worth closing.
+// `reportError` is `try { options.onerror?.(error) } catch {}`, so with no
+// `onerror` supplied a transport failure or a factory rejection is caught and
+// then DISCARDED IN SILENCE — the process would sit there having never attached,
+// saying nothing on either channel. stderr is where it goes because stdout is
+// the MCP wire, and it is where `banner` already writes.
 serveStdio(() => createMcpServer<typeof getClient>({
   name: 'skylight-mcp',
-  version: '0.10.2', // x-release-please-version
+  version: '1.0.1', // x-release-please-version
   banner: 'skylight-mcp ready',
   deps: getClient,
   tools: [
@@ -46,4 +58,8 @@ serveStdio(() => createMcpServer<typeof getClient>({
     registerPhotoTools,
     registerHealthcheckTools,
   ],
-}));
+}), {
+  onerror: (error) => {
+    console.error('skylight-mcp: stdio serving error —', error);
+  },
+});
